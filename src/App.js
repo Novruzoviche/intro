@@ -11,17 +11,17 @@ export default class App extends Component {
     this.getProducts();
   }
 
-  state={currentCategory: "", products: []}
+  state={currentCategory: "", products: [], cart:[]}
 
   changeCategory = (category) => {
     this.setState({currentCategory:category.categoryName});
-    this.getProducts(category.seoUrl)
+    this.getProducts(category.id)
   };
 
-  getProducts = seoUrl => {
+  getProducts = categoryId => {
     let url = "http://localhost:3000/products";
-    if(seoUrl){
-      url += "/" + seoUrl;
+    if(categoryId){
+      url += "?categoryId=" + categoryId;
     }
     fetch(url)
     .then(response=>response.json())
@@ -30,7 +30,12 @@ export default class App extends Component {
   }
 
 
-   
+  addTocart = (product) => {
+    let newCart = this.state.cart;
+    //var addedItem = newCart.find(c=>c.product.id ===product.id)
+    newCart.push({product:product,quantuty:1});
+    this.setState({cart:newCart});
+  }
 
    render() {
     let productInfo = {title:"ProductList"};
@@ -38,15 +43,23 @@ export default class App extends Component {
     return (
       <div>
         <Container>
-          <Row >
-            <Navi />
-          </Row>
+        
+            <Navi cart={this.state.cart} />
+          
           <Row>
             <Col xs="3">
-              <CategoryList currentCategory={this.state.currentCategory} changeCategory={this.changeCategory} info={categoryInfo}/>
+              <CategoryList 
+              currentCategory={this.state.currentCategory} 
+              changeCategory={this.changeCategory} 
+              info={categoryInfo}/>
             </Col>
             <Col xs="9">
-              <ProductList products={this.state.products} currentCategory={this.state.currentCategory} changeCategory={this.changeCategory} info={productInfo}/>
+              <ProductList 
+              products={this.state.products}
+              addTocart ={this.addTocart}
+              currentCategory={this.state.currentCategory} 
+              changeCategory={this.changeCategory} 
+              info={productInfo}/>
             </Col>
           </Row>
         </Container>
