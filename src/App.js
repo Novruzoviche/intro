@@ -1,69 +1,54 @@
-import React, { Component } from 'react'
 import CategoryList from './CategoryList';
 import Navi from './Navi';
 import ProductList from './ProductList';
-import { Container, Row, Col } from 'reactstrap'
+import { Container, Row, Col } from 'reactstrap';
+import React, { Component } from 'react'
 
 
 export default class App extends Component {
+  state= {currentCategory: "", products:[] }
 
-  componentDidMount(){
+  componentDidMount() {
     this.getProducts();
   }
 
-  state={currentCategory: "", products: [], cart:[]}
-
-  changeCategory = (category) => {
-    this.setState({currentCategory:category.categoryName});
-    this.getProducts(category.id)
+  changeCategory = category => {
+    this.setState({currentCategory:category.categoryName})
+    this.getProducts(category.id);
   };
 
-  getProducts = categoryId => {
+  getProducts = categoryId =>{
     let url = "http://localhost:3000/products";
     if(categoryId){
-      url += "?categoryId=" + categoryId;
+      url +="?categoryId="+categoryId;
     }
     fetch(url)
     .then(response=>response.json())
     .then(data=>this.setState({products:data}));;
+  }
   
-  }
+  render() {
+    let productInfo = { title: "ProductList" };
+    let categoryInfo = { title: "CategoryList" };
 
-
-  addTocart = (product) => {
-    let newCart = this.state.cart;
-    //var addedItem = newCart.find(c=>c.product.id ===product.id)
-    newCart.push({product:product,quantuty:1});
-    this.setState({cart:newCart});
-  }
-
-   render() {
-    let productInfo = {title:"ProductList"};
-    let categoryInfo = {title:"CategoryList"};
     return (
       <div>
         <Container>
-        
-            <Navi cart={this.state.cart} />
-          
+          <Row>
+            <Navi />
+          </Row>
           <Row>
             <Col xs="3">
-              <CategoryList 
-              currentCategory={this.state.currentCategory} 
-              changeCategory={this.changeCategory} 
-              info={categoryInfo}/>
+              <CategoryList currentCategory={this.state.currentCategory} changeCategory={this.changeCategory} info={categoryInfo} />
             </Col>
             <Col xs="9">
-              <ProductList 
+              <ProductList  
               products={this.state.products}
-              addTocart ={this.addTocart}
-              currentCategory={this.state.currentCategory} 
-              changeCategory={this.changeCategory} 
-              info={productInfo}/>
+              currentCategory={this.state.currentCategory} info={productInfo} />
             </Col>
           </Row>
         </Container>
       </div>
-    );
+    )
   }
-};
+}
